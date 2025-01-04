@@ -5,25 +5,29 @@ import numpy as np
 df = pd.read_csv("bank_marketing.csv")
 
 # Clean, format, and restructure the data.
+
+# Date Transformation
 df["year"] = 2022
 df["month"] = pd.to_datetime(df["month"], format='%b').dt.month
 df["last_contact_date"] = pd.to_datetime(df[["year", "month","day"]])
 df.drop(columns=["year", "month","day"], inplace=True)
 
+# Text Standardization
 df["job"] = df["job"].str.replace(".","_")
 df["education"] = df["education"].str.replace(".","_")
 df.loc[df["education"]=="unknown","education" ] = np.nan
 
+# Categorical to Boolean Conversion
 columns_to_convert = {
     "credit_default": "yes",
     "mortgage": "yes",
     "campaign_outcome": "yes",
     "previous_outcome": "success"
 }
-
 for column, true_value in columns_to_convert.items():
     df[column] = df[column].map(lambda x: 1 if x == true_value else 0).astype(bool)
 
+#  Data Subsetting
 client_cols_to_subset = ["client_id","age", "job", "marital","education","credit_default","mortgage"]
 campaign_cols_to_subset =["client_id", "number_contacts", "contact_duration","previous_campaign_contacts","previous_outcome","campaign_outcome","last_contact_date"]
 economics_cols_to_subset =["client_id","cons_price_idx", "euribor_three_months"]
